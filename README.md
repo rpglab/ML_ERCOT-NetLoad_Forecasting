@@ -27,10 +27,9 @@ FCNN Direct Method/            FCNN direct model
 FCNN Indirect Method/          FCNN component models and indirect result
 LSTM Direct Method/            LSTM direct model and optional result plot
 LSTM Indirect Method/          LSTM component models and indirect result
-Results/                       Paper Fig. 9/12 plotting notebook and APE statistics
+Results/                       Paper Figs. 8 and 12 plotting notebook and APE statistics
 fixed_data/                    Canonical model input in CSV/XLSX form
 figures/                       Regenerated 600 dpi paper figures
-05_Compare_Four_Methods.ipynb  Common-timestamp four-method comparison
 requirements.txt               Tested Python dependencies
 ```
 
@@ -130,7 +129,7 @@ LSTM Indirect Method/4_LSTM_indirect result.ipynb
 After all four final prediction files exist, run:
 
 ```text
-05_Compare_Four_Methods.ipynb
+Results/05_Compare_Four_Methods.ipynb
 ```
 
 The comparison uses only timestamps shared by all four methods and verifies that their actual net-load targets agree before calculating metrics.
