@@ -1,8 +1,5 @@
 ## ERCOT Net-Load Forecasting: FCNN and LSTM Direct/Indirect Methods
 
-This repository provides four ReLU linearization methods (BPWL, CTAR, P-CTAR, and PCAR) for neural network-embedded optimization, demonstrated on microgrid day-ahead energy scheduling with a neural network-based battery degradation (NNBD) model. Each method replaces the ReLU activation function with a set of linear constraints, so the NN-embedded scheduling problem becomes a mixed-integer linear program.
-
-
 This set of codes/data implements our TPEC paper "Net Load Forecasting with Renewable Capacity Features: A Comparison of Direct and Indirect Neural Network Methods".
 
 This repository contains reproducible Jupyter Notebook implementations of four hourly ERCOT net-load forecasting pipelines:
@@ -21,11 +18,6 @@ predicted net load
 - predicted wind generation
 ```
 
-All four methods forecast net load one hour ahead from a 24-hour input window, use installed wind and solar capacity as input features, and use a chronological 90%/5%/5% training/validation/test split. On the common test set, the indirect LSTM achieves the best overall accuracy (MAPE 2.46%, RMSPE 3.59%, and R² 98.7%).
-
-Only the enhanced LSTM solar model is included and used by the LSTM indirect workflow.
-
-
 ## Repository structure
 
 ```text
@@ -35,7 +27,7 @@ FCNN Direct Method/            FCNN direct model
 FCNN Indirect Method/          FCNN component models and indirect result
 LSTM Direct Method/            LSTM direct model and optional result plot
 LSTM Indirect Method/          LSTM component models and indirect result
-Results/                       Paper Fig. 8/12 plotting notebook and APE statistics
+Results/                       Paper Fig. 9/12 plotting notebook and APE statistics
 fixed_data/                    Canonical model input in CSV/XLSX form
 figures/                       Regenerated 600 dpi paper figures
 05_Compare_Four_Methods.ipynb  Common-timestamp four-method comparison
@@ -43,7 +35,6 @@ requirements.txt               Tested Python dependencies
 ```
 
 Model artifacts and regenerated predictions are written to `fixed_outputs/`. The directory is created automatically and ignored by Git.
-
 
 ## Environment
 
@@ -63,7 +54,6 @@ python -m notebook
 
 TensorFlow CPU is sufficient. GPU execution requires a TensorFlow-compatible CUDA/cuDNN installation and may produce small hardware-dependent numerical differences.
 
-
 ## Data
 
 ### Official ERCOT download source
@@ -75,15 +65,13 @@ The annual source workbooks were obtained from ERCOT's public **Hourly Aggregate
 
 ERCOT exposes the available annual files dynamically, so direct year-specific download URLs may change. If that happens, use the data-product page above and select the required year from **Available Files**. These links were verified on August 29, 2026. The exact 2021-2024 workbooks used by this repository are also included in `Data Download/` for reproducibility.
 
-### Canonical dataset
-
 The ready-to-use canonical dataset is included:
 
 - `fixed_data/ercot_2021_2024_hourly.csv` — model input;
 - `fixed_data/ercot_2021_2024_hourly.xlsx` — human-readable copy;
 - `fixed_data/ercot_2021_2024_audit.json` — row-count and integrity summary.
 
-It contains 35,065 continuous hourly timestamps from `2021-01-01 06:00:00` through `2025-01-01 06:00:00`. Timestamps are timezone-naive UTC keys converted from the ERCOT `America/Chicago` clock, so the daylight-saving transition remains unique and continuous.
+It contains 35,065 continuous hourly timestamps from `2021-01-01 06:00:00` through `2025-01-01 06:00:00`. Timestamps are UTC-naive keys converted from the ERCOT `America/Chicago` clock so the daylight-saving transition remains unique and continuous.
 
 The model workflows can use the included canonical CSV directly. To regenerate it from the four included ERCOT Wind/Solar workbooks, run:
 
@@ -104,7 +92,6 @@ Running the preparation notebook rewrites the three files in `fixed_data/`. It v
 
 The forecasting code does not require the legacy NLDAS files. Solar forecasting uses generation/capacity history, local calendar information, and `clear_sky_proxy`; wind forecasting uses generation/capacity history and local calendar information.
 
-
 ## Running order
 
 The direct and indirect branches may be trained independently. Within each indirect branch, run the three component models before the result notebook.
@@ -112,35 +99,33 @@ The direct and indirect branches may be trained independently. Within each indir
 ### FCNN direct
 
 ```text
-FCNN Direct Method/FCNN_net load_fixed.ipynb
+FCNN Direct Method/FCNN_net load.ipynb
 ```
 
 ### FCNN indirect
 
 ```text
-FCNN Indirect Method/1_FCNN_total load_fixed.ipynb
-FCNN Indirect Method/2_FCNN_solar power_fixed.ipynb
-FCNN Indirect Method/3_FCNN_wind power_fixed.ipynb
-FCNN Indirect Method/4_FCNN_indirect result_fixed.ipynb
+FCNN Indirect Method/1_FCNN_total load.ipynb
+FCNN Indirect Method/2_FCNN_solar power.ipynb
+FCNN Indirect Method/3_FCNN_wind power.ipynb
+FCNN Indirect Method/4_FCNN_indirect result.ipynb
 ```
 
 ### LSTM direct
 
 ```text
-LSTM Direct Method/LSTM_net load_fixed.ipynb
-LSTM Direct Method/LSTM Direct Prediction Graph_fixed.ipynb  # optional plot
+LSTM Direct Method/LSTM_net load.ipynb
+LSTM Direct Method/LSTM Direct Prediction Graph.ipynb  # optional plot
 ```
 
 ### LSTM indirect
 
 ```text
-LSTM Indirect Method/1_LSTM_total load_fixed.ipynb
-LSTM Indirect Method/2_LSTM_wind power_fixed.ipynb
-LSTM Indirect Method/3_LSTM_solar power_enhanced version_fixed.ipynb
-LSTM Indirect Method/4_LSTM_indirect result_fixed.ipynb
+LSTM Indirect Method/1_LSTM_total load.ipynb
+LSTM Indirect Method/2_LSTM_wind power.ipynb
+LSTM Indirect Method/3_LSTM_solar power.ipynb
+LSTM Indirect Method/4_LSTM_indirect result.ipynb
 ```
-
-### Comparison and paper figures
 
 After all four final prediction files exist, run:
 
@@ -150,14 +135,11 @@ After all four final prediction files exist, run:
 
 The comparison uses only timestamps shared by all four methods and verifies that their actual net-load targets agree before calculating metrics.
 
-To regenerate the paper's percentage-error plots and Table IV statistics from the four final prediction files, run:
+To regenerate the paper percentage-error plots and Table IV statistics from the four final prediction files, run:
 
 ```text
-Results/06_Plot_Percentage_Errors_fixed.ipynb
+Results/06_Plot_Percentage_Errors.ipynb
 ```
-
-This notebook saves the percentage-error figures for Fig. 8 (FCNN) and Fig. 12 (LSTM), in both standard and enhanced signed-error/APE-ECDF versions, to `figures/` at 600 dpi. The LSTM direct notebook saves the Fig. 9 loss curve, the FCNN direct notebook saves an optional diagnostic loss curve, and the four method workflows save Fig. 6, Fig. 7, Fig. 10, and Fig. 11 to the same directory.
-
 
 ## Output contract
 
@@ -170,7 +152,6 @@ Every trained component writes uniquely named artifacts to `fixed_outputs/`:
 - metrics in JSON format.
 
 Prediction tables use the common columns `time`, `actual`, and `predict`. Indirect result notebooks align all component files by timestamp with one-to-one merge validation rather than positional arithmetic.
-
 
 ## Reproducibility safeguards
 
